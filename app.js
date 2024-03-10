@@ -5,8 +5,8 @@ const genAI = new GoogleGenerativeAI('AIzaSyDcOM1kl6SwEbAde_zIXSMsHGvfAfz4NZI');
 
 const modelCache = {};
 
-async function generateQuestions(disciplina, assunto, banca, instituicao, ano, cargo, nivel, areaDeFormacao, areaDeAtuacao, dificuldade, numeroDeQuestoes) {
-    const cacheKey = `${disciplina}-${assunto}-${banca}-${instituicao}-${ano}-${cargo}-${nivel}-${areaDeFormacao}-${areaDeAtuacao}-${dificuldade}-${numeroDeQuestoes}`;
+async function generateQuestions(disciplina, assunto, banca, instituicao, ano, cargo, nivel, areaDeFormacao, areaDeAtuacao, dificuldade, numeroDeQuestoes, iteracao) {
+    const cacheKey = `${disciplina}-${assunto}-${banca}-${instituicao}-${ano}-${cargo}-${nivel}-${areaDeFormacao}-${areaDeAtuacao}-${dificuldade}-${numeroDeQuestoes}-${iteracao}`;
     if (cacheKey in modelCache) {
         return modelCache[cacheKey];
     }
@@ -25,7 +25,7 @@ async function generateQuestions(disciplina, assunto, banca, instituicao, ano, c
 - Área de atuação: ${areaDeAtuacao},
 - Dificuldade: ${dificuldade},
 + Resultado e Resolução da QUESTAO CRIADA,
-NAO PODE REPETIR PERGUNTA.
+OBRIGATORIO = NAO PODE REPETIR PERGUNTA.
 `;
 
 
@@ -67,15 +67,16 @@ NAO PODE REPETIR PERGUNTA.
 
 
 async function displayQuestionsLoop() {
+    let iteracao = 0;
     while (true) {
-        const disciplina = "Direito Constitucional";
+        const disciplina = "";
         const assunto = "";
         const banca = "Cebraspe";
         const nivel = " ";
         const instituicao = " ";
         const ano = "";
         const cargo = "";
-        const areaDeFormacao = "Direito";
+        const areaDeFormacao = "";
         const areaDeAtuacao = "POLICIA FEDERAL";
         const modalidade = "múltipla escolha";
         const dificuldade = "";
@@ -84,7 +85,7 @@ async function displayQuestionsLoop() {
         const questoes = [];
 
         try {
-            const perguntas = await generateQuestions(disciplina, assunto, banca, instituicao, ano, cargo, nivel, areaDeFormacao, areaDeAtuacao, dificuldade, numeroDeQuestoes);
+            const perguntas = await generateQuestions(disciplina, assunto, banca, instituicao, ano, cargo, nivel, areaDeFormacao, areaDeAtuacao, dificuldade, numeroDeQuestoes, iteracao);
 
             let questoesExistentes = [];
             try {
@@ -117,28 +118,19 @@ async function displayQuestionsLoop() {
                         "Alternativas": pergunta.question.slice(1)
                     }
                 };
-                const informacoesParaRemover = [
-                    "**Instituição:**",
-                    "**Ano:**",
-                    "**Cargo:**",
-                    "**Nível:**",
-                    "**Área de formação:**",
-                    "**Área de atuação:**",
-                    "**Dificuldade:**"
-                ];
-                pergunta.question = pergunta.question.filter(item => {
-                    return informacoesParaRemover.every(info => !item.includes(info));
-                });
-
+                
+            
                 console.log(JSON.stringify(questao, null, 2));
                 questoes.push(questao);
             }
+            
 
             fs.writeFileSync('questoes.json', JSON.stringify([...questoesExistentes, ...questoes], null, 2));
 
         } catch (error) {
             console.error(error.message);
         }
+        iteracao++;
 
         // Aguarda 1 segundo antes de gerar as próximas questões
         await new Promise(resolve => setTimeout(resolve, 1000));
