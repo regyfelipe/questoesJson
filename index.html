@@ -12,9 +12,9 @@
 
 <body>
   <div class="container">
+    <div id="score" class="mt-3 mostra escore">Pontuação: 100</div>
     <h2>Selecione as Opções:</h2>
     <form>
-      
       <div class="grid-container">
         <div class="form-group">
           <label for="disciplinaSelect">Disciplina:</label>
@@ -34,15 +34,23 @@
             <option value="">Selecione...</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-primary btn-custom filtra-questoes">Filtrar</button>
+        <label for="score-toggle" class="btn btn-primary btn-custom ver-score" onclick="toggleScore()">Ver pontuação</label>
       </div>
+      <button type="submit" class="btn btn-primary btn-custom filtra-questoes">Filtrar</button>
     </form>
   </div>
-  
-  <div id="score" class="mt-3"></div>
   <div id="quiz-container"></div>
-  
 
+  <script>
+    function toggleScore() {
+      var scoreElement = document.getElementById("score");
+      if (scoreElement.style.display === "none") {
+        scoreElement.style.display = "block";
+      } else {
+        scoreElement.style.display = "none";
+      }
+    }
+  </script>
   <script src="script.js"></script>
 </body>
 

@@ -346,6 +346,8 @@ function getCorrectAnswer(alternativas) {
     return 'Resposta correta não encontrada';
 }
 
+
+
 window.onload = function () {
     initializeQuiz();
 };
