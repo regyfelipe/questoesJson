@@ -223,3 +223,11 @@ button:hover {
 #score-toggle:checked ~ .ver-score + #score {
     display: none !important;
   }
+
+
+
+  .menu-toggle {
+    font-size: 40px;
+    padding-left: 10px;
+    cursor: pointer;
+  }

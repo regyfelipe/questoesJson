@@ -66,6 +66,7 @@ async function initializeQuiz() {
         const assuntoSelect = document.getElementById('assuntoSelect');
         const cargoSelect = document.getElementById('cargoSelect');
         let disciplinas = new Set();
+        
         allQuestions.forEach(questionData => {
             const firstLine = questionData.filtro.Alternativas[0];
             const disciplinaMatch = firstLine.match(/Disciplina: ([^-]+) - Assunto:/);
