@@ -12,17 +12,15 @@
 
 <body>
 
-  <!-- Menu de hambúrguer -->
   <div class="menu-toggle" onclick="toggleMenu()">
-    <i class="fas fa-bars"></i>
+    <i class="fas fa-bars"><span class="f-nome">Filtrar</span></i>
   </div>
 
   <div class="menu-sidebar" id="menuSidebar">
     <!-- Conteúdo do menu lateral aqui -->
   </div>
 
-  <div id="menu-oculto" class="container">
-    <h2>Selecione as Opções:</h2>
+  <div id="menu-culta" class="container">
     <div id="score" class="mt-3 mostra escore" style="display: none;">Pontuação: 100</div>
     <form>
       <div class="grid-container">
@@ -63,13 +61,13 @@
 
     function toggleMenu() {
       var menuSidebar = document.getElementById('menuSidebar');
-      var menuOculto = document.getElementById('menu-oculto');
+      var menuCulta = document.getElementById('menu-culta'); // Seleciona o elemento a ser ocultado
       if (menuSidebar.classList.contains('show')) {
         menuSidebar.classList.remove('show');
-        menuOculto.style.display = "block";
+        menuCulta.style.display = "block"; // Mostra o elemento quando o menu lateral é ocultado
       } else {
         menuSidebar.classList.add('show');
-        menuOculto.style.display = "none";
+        menuCulta.style.display = "none"; // Oculta o elemento quando o menu lateral é mostrado
       }
     }
   </script>

@@ -199,12 +199,11 @@ button:hover {
 }
 
 
-@media (max-width: 450px) {
-    .grid-container {
-        display: block !important;
-    }
-   
+.container {
+    display: none ;
 }
+
+
 
 /* ---------------------------- */
 #score {
@@ -227,7 +226,10 @@ button:hover {
 
 
   .menu-toggle {
-    font-size: 40px;
-    padding-left: 10px;
+    font-size: 30px;
+    padding: 10px;
     cursor: pointer;
   }
+
+
+ 
