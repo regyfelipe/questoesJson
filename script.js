@@ -3,11 +3,11 @@ async function loadQuestions() {
         const response = await fetch('questoes.json');
         const data = await response.json();
         // console.log(data)
-        return data; // Retorna o array de questões carregadas do JSON
+        return data; 
 
     } catch (error) {
         console.error('Erro ao carregar as questões:', error);
-        return []; // Retorna um array vazio em caso de erro
+        return []; 
     }
 }
 function processQuestionText(questionText, questionId) {
@@ -26,10 +26,8 @@ function processQuestionText(questionText, questionId) {
             processedLines.push(`<h5>${line}</h5>`);
             alternativasStarted = true;
         } else if (alternativasStarted && line.trim() !== '' && line.trim().startsWith('(')) {
-            // Verifica se a linha começa com uma letra dentro de parênteses
             const alternativeMatch = line.trim().match(/^\(([A-D])\)/);
             if (alternativeMatch) {
-                // Se corresponder, adiciona apenas o texto após a letra dentro do parêntese
                 const alternativeText = line.trim().replace(/^\([A-D]\)/, '');
                 processedLines.push(`
                     <div class="form-check">
@@ -40,7 +38,6 @@ function processQuestionText(questionText, questionId) {
                     </div>
                 `);
             } else {
-                // Se não corresponder, adiciona a linha como está
                 processedLines.push(`
                     <div class="form-check">
                         <input class="form-check-input radio-input" type="radio" name="alternativa-${questionId}" id="alternativa-${questionId}-${line.trim().charAt(1)}" value="${line.trim().charAt(1)}">
@@ -65,7 +62,7 @@ function processQuestionText(questionText, questionId) {
 }
 
 
-let allQuestions = []; // Variável global para armazenar todas as questões
+let allQuestions = []; 
 
 async function initializeQuiz() {
     try {
@@ -75,7 +72,6 @@ async function initializeQuiz() {
         const assuntoSelect = document.getElementById('assuntoSelect');
         const cargoSelect = document.getElementById('cargoSelect');
 
-        // Carregar todas as disciplinas disponíveis
         let disciplinas = new Set();
         allQuestions.forEach(questionData => {
             const firstLine = questionData.filtro.Alternativas[0];
@@ -90,16 +86,14 @@ async function initializeQuiz() {
             disciplinaSelect.appendChild(option);
         });
 
-        // Adicionar evento de mudança ao select de disciplina
         disciplinaSelect.addEventListener('change', () => {
             const selectedDisciplina = disciplinaSelect.value;
             updateAssuntosAndCargos(selectedDisciplina);
         });
 
-        // Exibir todas as questões ao inicializar o quiz
         displayAllQuestions();
         document.querySelector('.filtra-questoes').addEventListener('click', function (event) {
-            event.preventDefault(); // Evita o comportamento padrão do botão de enviar em um formulário
+            event.preventDefault(); 
 
             updateFilteredQuestions();
         });
@@ -113,23 +107,19 @@ function updateAssuntosAndCargos(selectedDisciplina) {
     const assuntoSelect = document.getElementById('assuntoSelect');
     const cargoSelect = document.getElementById('cargoSelect');
 
-    // Limpar opções anteriores
     assuntoSelect.innerHTML = '';
     cargoSelect.innerHTML = '';
 
-    // Adicionar opção "Selecione..." manualmente para assunto
     const defaultAssuntoOption = document.createElement('option');
     defaultAssuntoOption.value = '';
     defaultAssuntoOption.textContent = 'Selecione...';
     assuntoSelect.appendChild(defaultAssuntoOption);
 
-    // Adicionar opção "Selecione..." manualmente para cargo
     const defaultCargoOption = document.createElement('option');
     defaultCargoOption.value = '';
     defaultCargoOption.textContent = 'Selecione...';
     cargoSelect.appendChild(defaultCargoOption);
 
-    // Filtrar assuntos e cargos para a disciplina selecionada
     let assuntos = new Set();
     let cargos = new Set();
     allQuestions.forEach(questionData => {
@@ -144,7 +134,6 @@ function updateAssuntosAndCargos(selectedDisciplina) {
     assuntos = Array.from(assuntos).sort();
     cargos = Array.from(cargos).sort();
 
-    // Preencher o select de assunto com as opções extraídas
     assuntos.forEach(assunto => {
         const option = document.createElement('option');
         option.value = assunto;
@@ -152,7 +141,6 @@ function updateAssuntosAndCargos(selectedDisciplina) {
         assuntoSelect.appendChild(option);
     });
 
-    // Preencher o select de cargo com as opções extraídas
     cargos.forEach(cargo => {
         const option = document.createElement('option');
         option.value = cargo;
@@ -160,7 +148,6 @@ function updateAssuntosAndCargos(selectedDisciplina) {
         cargoSelect.appendChild(option);
     });
 
-    // Filtrar e exibir questões com base na disciplina selecionada
     filterQuestions(selectedDisciplina, 'Disciplina');
 }
 
@@ -185,9 +172,7 @@ function updateFilteredQuestions() {
 
 function displayFilteredQuestions(filteredQuestions) {
     const quizContainer = document.getElementById('quiz-container');
-    quizContainer.innerHTML = ''; // Limpar o contêiner de questões
-
-    // Exibir as questões filtradas
+    quizContainer.innerHTML = ''; 
     filteredQuestions.forEach(questionData => {
         const questionDiv = document.createElement('div');
         questionDiv.id = 'question-' + questionData.id;
@@ -230,7 +215,6 @@ function displayFilteredQuestions(filteredQuestions) {
 }
 
 function displayAllQuestions() {
-    // Exibir todas as questões sem filtros
     allQuestions.forEach(questionData => {
         const questionDiv = document.createElement('div');
         questionDiv.id = 'question-' + questionData.id;
@@ -297,16 +281,15 @@ function submitAnswer(questions, questionId, selectedAnswer) {
         if (isCorrect) {
             feedbackMessage = '<i class="fas fa-check text-success"></i> Parabéns! Você acertou!';
             feedbackElement.classList.add('correct');
-            correctAnswersCount++; // Incrementa o contador de respostas corretas
+            correctAnswersCount++; 
         } else {
             feedbackMessage = '<i class="fas fa-times text-danger"></i> Você errou! Resposta: ' + correctAnswer;
             feedbackElement.classList.add('incorrect');
-            wrongAnswersCount++; // Incrementa o contador de respostas erradas
+            wrongAnswersCount++; 
         }
         feedbackElement.innerHTML = feedbackMessage;
         feedbackElement.style.display = 'block';
 
-        // Verifica se já existe um elemento de resolução antes de adicioná-lo
         if (feedbackElement.parentNode.getElementsByClassName('resolution').length === 0) {
             const resolutionIndex = correctAnswerIndex + 1;
             const resolutionText = question.filtro.Alternativas[resolutionIndex].replace('RESOLUÇÃO: ', '').trim();
@@ -323,7 +306,7 @@ function submitAnswer(questions, questionId, selectedAnswer) {
         console.error('Elemento de feedback não encontrado para a questão:', questionId);
     }
 
-    updateScoreDisplay(); // Atualiza a exibição dos contadores na interface do usuário
+    updateScoreDisplay();
 }
 
 function updateScoreDisplay() {
