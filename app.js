@@ -46,16 +46,13 @@ RESOLUÇÃO:
 
 OBRIGATÓRIO: NÃO PODE REPETIR PERGUNTA.
 `;
-
     try {
         const result = await model.generateContent(prompt);
         const response = result?.response;
-
         if (response) {
             const questionsArray = response.text().split('\n').filter(Boolean);
             const questions = [];
             let currentQuestion = null;
-
             for (const line of questionsArray) {
                 if (line.startsWith("**Questão ")) {
                     if (currentQuestion !== null) {
@@ -77,15 +74,10 @@ OBRIGATÓRIO: NÃO PODE REPETIR PERGUNTA.
                     currentQuestion.question.push(line);
                 }
             }
-            
-            
-            
-
             if (currentQuestion !== null) {
                 currentQuestion.intro = currentQuestion.intro.map(line => line.replace(/^\*\*/, ''));
                 questions.push(currentQuestion);
             }
-
             modelCache[cacheKey] = questions;
             return questions;
         } else {
@@ -96,8 +88,6 @@ OBRIGATÓRIO: NÃO PODE REPETIR PERGUNTA.
         return null;
     }
 }
-
-
 
 async function displayQuestionsLoop() {
     let iteracao = 0;
@@ -115,12 +105,10 @@ async function displayQuestionsLoop() {
         const dificuldade = "";
         const materia = "";
         const numeroDeQuestoes = 10;
-
         const questoes = [];
 
         try {
             const perguntas = await generateQuestions(disciplina, assunto, banca, instituicao, ano, cargo, nivel, areaDeFormacao, areaDeAtuacao, dificuldade, numeroDeQuestoes,materia, iteracao);
-
             let questoesExistentes = [];
             try {
                 const data = fs.readFileSync('questoes.json', 'utf8');
@@ -128,34 +116,24 @@ async function displayQuestionsLoop() {
             } catch (err) {
                 console.error('Erro ao ler o arquivo questoes.json:', err);
             }
-
             const questoesExistentesCount = questoesExistentes.length;
-
             for (let index = 0; index < perguntas.length; index++) {
                 const pergunta = perguntas[index];
                 const questaoId = questoesExistentesCount + index + 1;
                 const questao = {
                     id: questaoId,
                     filtro: {
-
                         "Alternativas": pergunta.question,
-
                     }
                 };
-                
-            
-                console.log(JSON.stringify(questao, null, 2));
+                // console.log(JSON.stringify(questao, null, 2));
                 questoes.push(questao);
             }
-            
-
             fs.writeFileSync('questoes.json', JSON.stringify([...questoesExistentes, ...questoes], null, 2));
-
         } catch (error) {
             console.error(error.message);
         }
         iteracao++;
-
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 }

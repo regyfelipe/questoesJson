@@ -4,7 +4,6 @@ async function loadQuestions() {
         const data = await response.json();
         // console.log(data)
         return data; 
-
     } catch (error) {
         console.error('Erro ao carregar as questões:', error);
         return []; 
@@ -50,28 +49,22 @@ function processQuestionText(questionText, questionId) {
         } else if (line.startsWith('RESPOSTA:')) {
             processedLines.push(`<div style="display: none;" class="resposta-correta">${line}</div>`);
             // console.log(line)
-
         } else if (line.startsWith('RESOLUÇÃO:')) {
             processedLines.push(`<div style="display: none;" class="resolucao">${line}</div>`);
             // console.log(line)
         }
     });
-
-
     return processedLines.join('');
 }
-
 
 let allQuestions = []; 
 
 async function initializeQuiz() {
     try {
         allQuestions = await loadQuestions();
-
         const disciplinaSelect = document.getElementById('disciplinaSelect');
         const assuntoSelect = document.getElementById('assuntoSelect');
         const cargoSelect = document.getElementById('cargoSelect');
-
         let disciplinas = new Set();
         allQuestions.forEach(questionData => {
             const firstLine = questionData.filtro.Alternativas[0];
@@ -90,14 +83,12 @@ async function initializeQuiz() {
             const selectedDisciplina = disciplinaSelect.value;
             updateAssuntosAndCargos(selectedDisciplina);
         });
-
         displayAllQuestions();
         document.querySelector('.filtra-questoes').addEventListener('click', function (event) {
             event.preventDefault(); 
 
             updateFilteredQuestions();
         });
-
     } catch (error) {
         console.error('Erro ao carregar as questões:', error);
     }
@@ -147,11 +138,8 @@ function updateAssuntosAndCargos(selectedDisciplina) {
         option.textContent = cargo;
         cargoSelect.appendChild(option);
     });
-
     filterQuestions(selectedDisciplina, 'Disciplina');
 }
-
-
 
 function updateFilteredQuestions() {
     const selectedDisciplina = disciplinaSelect.value;
@@ -184,7 +172,7 @@ function displayFilteredQuestions(filteredQuestions) {
         const cardBodyDiv = document.createElement('div');
         cardBodyDiv.classList.add('card-body');
 
-        cardBodyDiv.innerHTML = processQuestionText(questionData.filtro.Alternativas.join('\n'), questionData.id); // Correção aqui: passando o ID da questão
+        cardBodyDiv.innerHTML = processQuestionText(questionData.filtro.Alternativas.join('\n'), questionData.id); 
 
         const submitButton = document.createElement('button');
         submitButton.type = 'button';
@@ -200,7 +188,7 @@ function displayFilteredQuestions(filteredQuestions) {
         cardBodyDiv.appendChild(feedbackDiv);
 
         submitButton.onclick = function () {
-            const selectedAnswer = document.querySelector('input[name="alternativa-' + questionData.id + '"]:checked'); // Correção aqui: seleção correta do input
+            const selectedAnswer = document.querySelector('input[name="alternativa-' + questionData.id + '"]:checked'); 
             if (selectedAnswer) {
                 submitAnswer(allQuestions, questionData.id, selectedAnswer.value);
             } else {
@@ -214,8 +202,48 @@ function displayFilteredQuestions(filteredQuestions) {
     });
 }
 
+let currentQuestionIndex = 0;
+
 function displayAllQuestions() {
-    allQuestions.forEach(questionData => {
+    const questionsPerPage = 100;
+    const quizContainer = document.getElementById('quiz-container');
+    quizContainer.innerHTML = ''; 
+    displayQuestionsInRange(currentQuestionIndex, currentQuestionIndex + questionsPerPage);
+    currentQuestionIndex += questionsPerPage;
+
+    function addMoreQuestions() {
+        quizContainer.innerHTML = '';
+        displayQuestionsInRange(currentQuestionIndex, currentQuestionIndex + questionsPerPage);
+        currentQuestionIndex += questionsPerPage;
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' 
+        });
+        if (currentQuestionIndex < allQuestions.length) {
+            addMoreQuestionsButton();
+        }
+    }
+
+    function addMoreQuestionsButton() {
+        const maisQuestoesButton = document.createElement('button');
+        maisQuestoesButton.type = 'button';
+        maisQuestoesButton.classList.add('btn', 'btn-primary', 'btn-custom', 'mais-questoes');
+        maisQuestoesButton.textContent = 'Mais Questões';
+        maisQuestoesButton.onclick = addMoreQuestions;
+        quizContainer.appendChild(maisQuestoesButton);
+    }
+
+    addMoreQuestionsButton();
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth' 
+    });
+}
+
+function displayQuestionsInRange(startIndex, endIndex) {
+    for (let i = startIndex; i < endIndex && i < allQuestions.length; i++) {
+        const questionData = allQuestions[i];
+
         const questionDiv = document.createElement('div');
         questionDiv.id = 'question-' + questionData.id;
         questionDiv.classList.add('question');
@@ -225,8 +253,7 @@ function displayAllQuestions() {
 
         const cardBodyDiv = document.createElement('div');
         cardBodyDiv.classList.add('card-body');
-
-        cardBodyDiv.innerHTML = processQuestionText(questionData.filtro.Alternativas.join('\n'), questionData.id); // Correção aqui: passando o ID da questão
+        cardBodyDiv.innerHTML = processQuestionText(questionData.filtro.Alternativas.join('\n'), questionData.id); 
 
         const submitButton = document.createElement('button');
         submitButton.type = 'button';
@@ -242,7 +269,7 @@ function displayAllQuestions() {
         cardBodyDiv.appendChild(feedbackDiv);
 
         submitButton.onclick = function () {
-            const selectedAnswer = document.querySelector('input[name="alternativa-' + questionData.id + '"]:checked'); // Correção aqui: seleção correta do input
+            const selectedAnswer = document.querySelector('input[name="alternativa-' + questionData.id + '"]:checked'); 
             if (selectedAnswer) {
                 submitAnswer(allQuestions, questionData.id, selectedAnswer.value);
             } else {
@@ -253,12 +280,8 @@ function displayAllQuestions() {
         cardDiv.appendChild(cardBodyDiv);
         questionDiv.appendChild(cardDiv);
         document.getElementById('quiz-container').appendChild(questionDiv);
-    });
+    }
 }
-
-
-
-
 
 let correctAnswersCount = 0;
 let wrongAnswersCount = 0;
@@ -272,7 +295,6 @@ function submitAnswer(questions, questionId, selectedAnswer) {
 
     const correctAnswerIndex = question.filtro.Alternativas.findIndex(item => item.startsWith('RESPOSTA:'));
     const correctAnswer = question.filtro.Alternativas[correctAnswerIndex].replace('RESPOSTA: ', '').trim();
-
     const isCorrect = selectedAnswer === correctAnswer;
 
     const feedbackElement = document.getElementById('feedback-' + questionId);
@@ -316,9 +338,6 @@ function updateScoreDisplay() {
     }
 }
 
-
-
-
 function getCorrectAnswer(alternativas) {
     const correctAnswerIndex = alternativas.findIndex(item => item.startsWith('RESPOSTA:'));
     if (correctAnswerIndex !== -1) {
@@ -327,7 +346,8 @@ function getCorrectAnswer(alternativas) {
     return 'Resposta correta não encontrada';
 }
 
-
 window.onload = function () {
     initializeQuiz();
 };
+
+
