@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz com Estilo Personalizado</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome (ícones) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <!-- Estilos customizados -->
+  <style>
+    body {
+            background-color: rgb(0, 0, 0);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: darkmagenta;
+        }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #000000;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+      border: none;
+      background-color: #f8f9fa;
+    }
+
+    .card-title {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-check-input {
+      margin-right: 5px;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+
+    .feedback {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    .correct {
+      color: #28a745;
+    }
+
+    .incorrect {
+      color: #dc3545;
+    }
+
+    .animate__animated {
+      animation-duration: 1s;
+    }
+
+    .animate__fadeInUp {
+      animation-name: fadeInUp;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .radio-input {
+            display: none;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .radio-label span {
+            font-size: 18px;
+            color: #333;
+            margin-left: 5px;
+        }
+
+        .radio-custom {
+            border: 1px solid #333;
+            border-radius: 50%;
+            display: flex;
+            margin: 5px;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .radio-custom::before {
+            content: "";
+            display: block;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background-color: transparent;
+        }
+
+        .radio-custom::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            
+        }
+
+        .radio-input:checked + .radio-label .radio-custom::before {
+            background-color: #333;
+            
+        }
+
+        .radio-input:checked + .radio-label .radio-custom::after {
+            color: #fff;
+        }
+  </style>
+</head>
+<body>
+  <div class="container">    
+    <div class="card mb-3 animate__animated animate__fadeInUp">
+      <div class="card-body">
+        <h5 class="card-title">Questão 1</h5>
+        <p class="card-text">No sistema eleitoral brasileiro, o Voto Distrital Misto é utilizado para a eleição de quais cargos?</p>
+        <form id="questao1">
+          <div class="form-check">
+            <input class="form-check-input radio-input" type="radio" name="questao1" id="alternativa1" value="A">
+            <label class="form-check-label radio-label" for="alternativa1">
+                <div class="radio-custom" data-text="A"></div>
+                Presidente da República e Governador
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input radio-input" type="radio" name="questao1" id="alternativa2" value="B">
+            <label class="form-check-label radio-label" for="alternativa2">
+                <div class="radio-custom" data-text="B"></div>
+                Deputados Federais e Estaduais
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input radio-input" type="radio" name="questao1" id="alternativa3" value="C">
+            <label class="form-check-label radio-label" for="alternativa3">
+                <div class="radio-custom" data-text="C"></div>
+                Senadores e Vereadores
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input radio-input" type="radio" name="questao1" id="alternativa4" value="D">
+            <label class="form-check-label radio-label" for="alternativa4">
+                <div class="radio-custom" data-text="D"></div>
+                Deputados Estaduais e Vereadores
+            </label>
+          </div>
+          <button type="button" class="btn btn-primary mt-3" onclick="submitAnswer('questao1')">Enviar Resposta</button>
+          <div id="feedback-questao1" class="feedback mt-2"></div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bootstrap JS (opcional, se necessário) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Font Awesome (ícones) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+  <script>
+    function submitAnswer(formId) {
+      var form = document.getElementById(formId);
+      var selectedOption = form.querySelector('input[name="' + formId + '"]:checked');
+      var feedbackElement = document.getElementById('feedback-' + formId);
+      if (selectedOption) {
+        var feedbackMessage;
+        if (selectedOption.value === 'B') {
+          feedbackMessage = '<i class="fas fa-check text-success"></i> Parabéns! Você acertou!';
+          feedbackElement.classList.add('correct');
+        } else {
+          feedbackMessage = '<i class="fas fa-times text-danger"></i> Você errou! Resposta: Brasília';
+          feedbackElement.classList.add('incorrect');
+        }
+        feedbackElement.innerHTML = feedbackMessage;
+      }
+    }
+  </script>
+</body>
+</html>

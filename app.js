@@ -5,14 +5,13 @@ const genAI = new GoogleGenerativeAI('AIzaSyDcOM1kl6SwEbAde_zIXSMsHGvfAfz4NZI');
 
 const modelCache = {};
 
-async function generateQuestions(disciplina, assunto, banca, instituicao, ano, cargo, nivel, areaDeFormacao, areaDeAtuacao, dificuldade, numeroDeQuestoes, iteracao) {
-    const cacheKey = `${disciplina}-${assunto}-${banca}-${instituicao}-${ano}-${cargo}-${nivel}-${areaDeFormacao}-${areaDeAtuacao}-${dificuldade}-${numeroDeQuestoes}-${iteracao}`;
+async function generateQuestions(disciplina, assunto, banca, instituicao, ano, cargo, nivel, areaDeFormacao, areaDeAtuacao, dificuldade, numeroDeQuestoes, materia, iteracao) {
+    const cacheKey = `${disciplina}-${assunto}-${banca}-${instituicao}-${ano}-${cargo}-${nivel}-${areaDeFormacao}-${areaDeAtuacao}-${dificuldade}-${numeroDeQuestoes}-${materia}-${iteracao}`;
     if (cacheKey in modelCache) {
         return modelCache[cacheKey];
     }
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     const prompt = `Crie ${numeroDeQuestoes} questões de MULTIPLA ESCOLHA com os seguintes critérios:
-
 
 - Disciplina: ${disciplina},
 - Assunto: ${assunto},
@@ -24,10 +23,29 @@ async function generateQuestions(disciplina, assunto, banca, instituicao, ano, c
 - Área de formação: ${areaDeFormacao},
 - Área de atuação: ${areaDeAtuacao},
 - Dificuldade: ${dificuldade},
-+ Resultado e Resolução da QUESTAO CRIADA,
-OBRIGATORIO = NAO PODE REPETIR PERGUNTA.
-`;
+- Materia: ${materia},
 
+Para cada questão, inclua obrigatoriamente:
++ Informação : Banca do Consurso:  - Disciplina: - Assunto:  - Ano:  - Cargo:  - Dificuldade:  
++ Enunciado da questão :
++ Alternativas DENTRO DE () COM LETRA MAIÚSCULA:
++ Resposta correta: ,
++ Resolução da questão: .
+
+seguindo o seguinte exemplo:
+Banca do Concurso: IBGE - Disciplina: Estatística - Assunto: Gráficos e tabelas - Ano: 2015 - Cargo: POLICIAL - Dificuldade: Fácil",
+Enunciado da questão:
+"Qual dos seguintes gráficos é mais adequado para representar dados de frequência?"
+
+"A) Gráfico de linhas"
+"B) Gráfico de barras"
+"C) Gráfico de pizza"
+"D) Gráfico de dispersão"
+RESPOSTA: A
+RESOLUÇÃO: 
+
+OBRIGATÓRIO: NÃO PODE REPETIR PERGUNTA.
+`;
 
     try {
         const result = await model.generateContent(prompt);
@@ -41,16 +59,30 @@ OBRIGATORIO = NAO PODE REPETIR PERGUNTA.
             for (const line of questionsArray) {
                 if (line.startsWith("**Questão ")) {
                     if (currentQuestion !== null) {
+                        // Remove os '**' das linhas introdutórias
+                        currentQuestion.intro = currentQuestion.intro.map(line => line.replace(/^\*\*/, ''));
                         questions.push(currentQuestion);
                     }
                     currentQuestion = { intro: [], question: [] };
                     currentQuestion.intro.push(line);
+                } else if (line.startsWith("**RESPOSTA:")) {
+                    // Remove os '**' da linha de resposta
+                    let formattedLine = line.replace(/^\*\*/, '');
+                    // Verifica se a linha é uma única alternativa, e se for, formata-a
+                    if (/^\([A-Z]\)$/.test(formattedLine)) {
+                        formattedLine = formattedLine.replace(/^\((.*?)\)$/, '$1)');
+                    }
+                    currentQuestion.question.push(formattedLine);
                 } else {
                     currentQuestion.question.push(line);
                 }
             }
+            
+            
+            
 
             if (currentQuestion !== null) {
+                currentQuestion.intro = currentQuestion.intro.map(line => line.replace(/^\*\*/, ''));
                 questions.push(currentQuestion);
             }
 
@@ -66,26 +98,28 @@ OBRIGATORIO = NAO PODE REPETIR PERGUNTA.
 }
 
 
+
 async function displayQuestionsLoop() {
     let iteracao = 0;
     while (true) {
         const disciplina = "";
         const assunto = "";
-        const banca = "Cebraspe";
+        const banca = "";
         const nivel = " ";
         const instituicao = " ";
         const ano = "";
         const cargo = "";
         const areaDeFormacao = "";
-        const areaDeAtuacao = "POLICIA FEDERAL";
+        const areaDeAtuacao = "";
         const modalidade = "múltipla escolha";
         const dificuldade = "";
+        const materia = "";
         const numeroDeQuestoes = 10;
 
         const questoes = [];
 
         try {
-            const perguntas = await generateQuestions(disciplina, assunto, banca, instituicao, ano, cargo, nivel, areaDeFormacao, areaDeAtuacao, dificuldade, numeroDeQuestoes, iteracao);
+            const perguntas = await generateQuestions(disciplina, assunto, banca, instituicao, ano, cargo, nivel, areaDeFormacao, areaDeAtuacao, dificuldade, numeroDeQuestoes,materia, iteracao);
 
             let questoesExistentes = [];
             try {
@@ -103,19 +137,9 @@ async function displayQuestionsLoop() {
                 const questao = {
                     id: questaoId,
                     filtro: {
-                        "Disciplina": disciplina,
-                        "Assunto": assunto,
-                        "Banca": banca,
-                        "Nível": nivel,
-                        "Instituição": instituicao,
-                        "Ano": ano,
-                        "Cargo": cargo,
-                        "Formação": areaDeFormacao,
-                        "Área de Atuação": areaDeAtuacao,
-                        "Modalidade": modalidade,
-                        "Dificuldade": dificuldade,
-                        "Pergunta": pergunta.question[0].replace("**", ""),
-                        "Alternativas": pergunta.question.slice(1)
+
+                        "Alternativas": pergunta.question,
+
                     }
                 };
                 
