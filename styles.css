@@ -1,17 +1,20 @@
+body {
+    background-color: #000000 !important;
+}
 
 .question {
 max-width: 600px;
 margin: 0 auto;
 padding: 20px;
 margin-top: 1em;
-background-color: #fff;
+background-color: #FEFBF6;
 border-radius: 10px;
 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 } 
 
 .card {
 border: none;
-background-color: #f8f9fa;
+background-color: #EEEEEE !important;
 }
 
 .card-title {
@@ -24,12 +27,12 @@ margin-right: 5px;
 }
 
 .btn-primary {
-background-color: #007bff;
+background-color: #070F2B !important;
 border: none;
 }
 
 .btn-primary:hover {
-background-color: #0056b3;
+background-color: #1B1A55 !important;
 }
 
 .feedback {
@@ -130,7 +133,7 @@ form {
     margin: 0 auto;
     padding: 20px;
     margin-top: 1em;
-    background-color: #fff;
+    background-color: #FEFBF6;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }

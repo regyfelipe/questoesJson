@@ -317,7 +317,7 @@ function submitAnswer(questions, questionId, selectedAnswer) {
             const resolutionText = question.filtro.Alternativas[resolutionIndex].replace('RESOLUÇÃO: ', '').trim();
             if (resolutionText) {
                 const resolutionDiv = document.createElement('div');
-                resolutionDiv.classList.add('resolution'); // Adiciona uma classe para identificar a resolução
+                resolutionDiv.classList.add('resolution'); 
                 resolutionDiv.textContent = resolutionText;
                 feedbackElement.parentNode.appendChild(resolutionDiv);
             } else {
